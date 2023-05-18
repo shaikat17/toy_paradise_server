@@ -33,6 +33,13 @@ async function run() {
         // console.log(result)
       res.send(result);
     });
+
+    app.get('/all-toys', async (req, res) => {
+        const result = await toys.find().toArray()
+        // console.log(result)
+
+        res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
