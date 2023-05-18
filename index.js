@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require('cors');
+const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
@@ -28,70 +28,75 @@ async function run() {
     // Add toy to the database
     app.post("/add-toy", async (req, res) => {
       const data = req.body;
-    //   console.log(data);
-        const result = await toys.insertOne(data)
-        // console.log(result)
+      //   console.log(data);
+      const result = await toys.insertOne(data);
+      // console.log(result)
       res.send(result);
     });
 
-    app.get('/all-toys', async (req, res) => {
-        const result = await toys.find().toArray()
-        // console.log(result)
+    app.get("/all-toys", async (req, res) => {
+      const result = await toys.find().toArray();
+      // console.log(result)
 
-        res.send(result)
-    })
+      res.send(result);
+    });
 
     // get user toys
-    app.get('/user-toys', async (req, res) => {
-      const qData = req.query.email
-      // console.log(qData)
+    app.get("/user-toys", async (req, res) => {
+      const qData = req.query.email;
+      const srt = req.query.sort;
+      let result = [];
 
-      const result = await toys.find({"userEmail": qData}).toArray()
-
-      res.send(result)
-    })
+      console.log(srt)
+      if (qData && srt) {
+        // If both 'email' and 'sort' parameters are provided
+        result = await toys
+          .find({ userEmail: qData })
+          .sort({ [srt]: 1 })
+          .toArray();
+      } else {
+        // If either 'email' or 'sort' parameter is missing or empty
+        result = await toys.find({ userEmail: qData }).toArray();
+      }
+      res.send(result);
+    });
 
     // update route
-    app.put('/edit-toy/:id', async (req, res) => {
-      const id = req.params.id
-      const {
-        toyPrice,
-        quantity,
-        description
-      } = req.body
-      const query = {"_id": new ObjectId(id)}
+    app.put("/edit-toy/:id", async (req, res) => {
+      const id = req.params.id;
+      const { toyPrice, quantity, description } = req.body;
+      const query = { _id: new ObjectId(id) };
       const update = {
         $set: {
           toyPrice,
-        quantity,
-        description
-        }
-      }
+          quantity,
+          description,
+        },
+      };
       const options = {
-        upsert: true
-      }
+        upsert: true,
+      };
       // console.log(req.body)
-      const result = await toys.updateOne(query, update, options)
-      res.send(result)
-    })
+      const result = await toys.updateOne(query, update, options);
+      res.send(result);
+    });
 
-    // delete toy 
-    app.delete('/toy/:id', async (req, res) => {
-      const id = req.params.id
+    // delete toy
+    app.delete("/toy/:id", async (req, res) => {
+      const id = req.params.id;
       // console.log(id)
-      const result = await toys.deleteOne({"_id" : new ObjectId(id)})
-      res.send(result)
-    })
-
+      const result = await toys.deleteOne({ _id: new ObjectId(id) });
+      res.send(result);
+    });
 
     // get single toy
     app.get("/single-toy/:id", async (req, res) => {
-      const id = req.params.id
-      console.log(id)
-      const result = await toys.findOne({_id: new ObjectId(id)})
+      const id = req.params.id;
+      console.log(id);
+      const result = await toys.findOne({ _id: new ObjectId(id) });
 
-      res.send(result)
-    })
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
