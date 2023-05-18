@@ -51,6 +51,30 @@ async function run() {
       res.send(result)
     })
 
+    // update route
+    app.put('/edit-toy/:id', async (req, res) => {
+      const id = req.params.id
+      const {
+        toyPrice,
+        quantity,
+        description
+      } = req.body
+      const query = {"_id": new ObjectId(id)}
+      const update = {
+        $set: {
+          toyPrice,
+        quantity,
+        description
+        }
+      }
+      const options = {
+        upsert: true
+      }
+      // console.log(req.body)
+      const result = await toys.updateOne(query, update, options)
+      res.send(result)
+    })
+
     // get single toy
     app.get("/single-toy/:id", async (req, res) => {
       const id = req.params.id
