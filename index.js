@@ -75,6 +75,15 @@ async function run() {
       res.send(result)
     })
 
+    // delete toy 
+    app.delete('/toy/:id', async (req, res) => {
+      const id = req.params.id
+      // console.log(id)
+      const result = await toys.deleteOne({"_id" : new ObjectId(id)})
+      res.send(result)
+    })
+
+
     // get single toy
     app.get("/single-toy/:id", async (req, res) => {
       const id = req.params.id
