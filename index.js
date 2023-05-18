@@ -50,10 +50,17 @@ async function run() {
       console.log(srt)
       if (qData && srt) {
         // If both 'email' and 'sort' parameters are provided
+        if(srt === "ascending") {
         result = await toys
           .find({ userEmail: qData })
-          .sort({ [srt]: 1 })
+          .sort({ toyPrice: 1 }) //for dynamic multiple option sort({ [srt]: 1}) => srt = Price, Quantity
           .toArray();
+        } else {
+          result = await toys
+          .find({ userEmail: qData })
+          .sort({ toyPrice: -1 })
+          .toArray();
+        }
       } else {
         // If either 'email' or 'sort' parameter is missing or empty
         result = await toys.find({ userEmail: qData }).toArray();
