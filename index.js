@@ -40,6 +40,17 @@ async function run() {
 
         res.send(result)
     })
+
+    // get user toys
+    app.get('/user-toys', async (req, res) => {
+      const qData = req.query.email
+      console.log(qData)
+
+      const result = await toys.find({"userEmail": qData}).toArray()
+
+      res.send(result)
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
