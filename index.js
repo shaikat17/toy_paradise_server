@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,7 +20,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const toyParadiseDB = client.db("toyParadiseDB");
     const toys = toyParadiseDB.collection("toys");
@@ -44,9 +44,18 @@ async function run() {
     // get user toys
     app.get('/user-toys', async (req, res) => {
       const qData = req.query.email
-      console.log(qData)
+      // console.log(qData)
 
       const result = await toys.find({"userEmail": qData}).toArray()
+
+      res.send(result)
+    })
+
+    // get single toy
+    app.get("/single-toy/:id", async (req, res) => {
+      const id = req.params.id
+      console.log(id)
+      const result = await toys.findOne({_id: new ObjectId(id)})
 
       res.send(result)
     })
