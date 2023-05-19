@@ -35,7 +35,7 @@ async function run() {
     });
 
     app.get("/all-toys", async (req, res) => {
-      const result = await toys.find().toArray();
+      const result = await toys.find().limit(20).toArray();
       // console.log(result)
 
       res.send(result);
@@ -112,12 +112,12 @@ async function run() {
       if (id === "0") {
         result = await toys.find().toArray();
       } else if (id === "1") {
-        result = await toys.find({"category": "Baby Doll"}).toArray();
+        result = await toys.find({ category: "Baby Doll" }).toArray();
       } else if (id === "2") {
-        result = await toys.find({"category": "Fashion Doll"}).toArray();
+        result = await toys.find({ category: "Fashion Doll" }).toArray();
       } else if (id === "3") {
-        result = await toys.find({"category": "Character Doll"}).toArray();
-      } 
+        result = await toys.find({ category: "Character Doll" }).toArray();
+      }
       // console.log(typeof id)
       res.send(result);
     });
