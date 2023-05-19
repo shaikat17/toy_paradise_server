@@ -47,19 +47,19 @@ async function run() {
       const srt = req.query.sort;
       let result = [];
 
-      console.log(srt)
+      console.log(srt);
       if (qData && srt) {
         // If both 'email' and 'sort' parameters are provided
-        if(srt === "ascending") {
-        result = await toys
-          .find({ userEmail: qData })
-          .sort({ toyPrice: 1 }) //for dynamic multiple option sort({ [srt]: 1}) => srt = Price, Quantity
-          .toArray();
+        if (srt === "ascending") {
+          result = await toys
+            .find({ userEmail: qData })
+            .sort({ toyPrice: 1 }) //for dynamic multiple option sort({ [srt]: 1}) => srt = Price, Quantity
+            .toArray();
         } else {
           result = await toys
-          .find({ userEmail: qData })
-          .sort({ toyPrice: -1 })
-          .toArray();
+            .find({ userEmail: qData })
+            .sort({ toyPrice: -1 })
+            .toArray();
         }
       } else {
         // If either 'email' or 'sort' parameter is missing or empty
@@ -99,9 +99,26 @@ async function run() {
     // get single toy
     app.get("/single-toy/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const result = await toys.findOne({ _id: new ObjectId(id) });
 
+      res.send(result);
+    });
+
+    // get categorywise data
+    app.get("/toys/:id", async (req, res) => {
+      const id = req.params.id;
+
+      let result = [];
+      if (id === "0") {
+        result = await toys.find().toArray();
+      } else if (id === "1") {
+        result = await toys.find({"category": "Baby Doll"}).toArray();
+      } else if (id === "2") {
+        result = await toys.find({"category": "Fashion Doll"}).toArray();
+      } else if (id === "3") {
+        result = await toys.find({"category": "Character Doll"}).toArray();
+      } 
+      // console.log(typeof id)
       res.send(result);
     });
 
