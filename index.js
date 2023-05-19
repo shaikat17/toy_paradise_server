@@ -122,6 +122,14 @@ async function run() {
       res.send(result);
     });
 
+    // serach route
+    app.get("/toys", async (req, res) => {
+      const src = req.query.q;
+      const result = await toys.find({ toyName: { $regex: src, $options: 'i' } }).toArray();
+      
+      res.send(result)
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
