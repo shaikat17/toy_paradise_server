@@ -35,10 +35,29 @@ async function run() {
     });
 
     app.get("/all-toys", async (req, res) => {
-      const result = await toys.find().limit(20).toArray();
+      let page = parseInt(req.query.page) || 0;
+      let limit = parseInt(req.query.limit) || 10;
+
+      // Calculate the total number of documents in the collection
+      const totalData = await toys.estimatedDocumentCount();
+      // console.log(totalData)
+
+      // Calculate the total number of pages
+      const totalPages = Math.ceil(totalData / limit);
+
+      // Validate page value
+      if (isNaN(page) || page < 0) {
+        page = 0;
+      } else if (page > totalPages) {
+        page = totalPages;
+      }
+
+      const skip = page * limit;
+
+      const result = await toys.find().skip(skip).limit(limit).toArray();
       // console.log(result)
 
-      res.send(result);
+      res.send({ result, totalPages });
     });
 
     // get user toys
@@ -125,10 +144,21 @@ async function run() {
     // serach route
     app.get("/toys", async (req, res) => {
       const src = req.query.q;
-      const result = await toys.find({ toyName: { $regex: src, $options: 'i' } }).toArray();
-      
-      res.send(result)
-    })
+      const result = await toys
+        .find({ toyName: { $regex: src, $options: "i" } })
+        .toArray();
+
+      res.send(result);
+    });
+
+    // Total data
+    app.get("/total-toys", async (req, res) => {
+      const result = await toys.estimatedDocumentCount();
+
+      console.log(result);
+
+      res.send({ result });
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
